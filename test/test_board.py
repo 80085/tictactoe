@@ -53,7 +53,7 @@ class BoardTest(unittest.TestCase):
         self.assertIsNone(board.winner)
         self.assertEqual(0, len(board.available_positions()))
 
-    def test_may_not_player_an_ended_game(self):
+    def test_may_not_play_an_ended_game(self):
         board = Board()
         for row in range(3):
             board.put('o', (row, 0))

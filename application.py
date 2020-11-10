@@ -7,8 +7,8 @@ from tictactoe.player import Computer, Human
 
 
 def train_agent(iterations):
-    player_x = Computer('x', 'x')
-    player_o = Computer('o', 'o')
+    player_x = Computer('x')
+    player_o = Computer('o')
     game = Game(player_x, player_o)
     for _ in tqdm.tqdm(range(iterations)):
         game.play()
@@ -18,9 +18,9 @@ def train_agent(iterations):
 
 def play_game(player_symbol):
     if player_symbol == 'x':
-        game = Game(Human('Player One', 'x'), Computer('Player Two', 'o', exp_rate=0.1))
+        game = Game(Human('x'), Computer('o', exp_rate=0.0))
     else:
-        game = Game(Computer('Player One', 'x', exp_rate=0.1), Human('Player Two', 'o'))
+        game = Game(Computer('x', exp_rate=0.0), Human('o'))
     while True:
         print(game.play())
         if input('Play again? (y/n): ').lower() != 'y':
