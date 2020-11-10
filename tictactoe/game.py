@@ -12,7 +12,7 @@ class Game:
 
     def _validate(self):
         if self.player_one.symbol == self.player_two.symbol:
-            raise ValueError('Both player cannot have the same symbol')
+            raise ValueError('Both players cannot have the same symbol')
 
     def play(self):
         board = Board()

@@ -6,14 +6,12 @@ from tictactoe.board import Board
 
 
 class Player(ABC):
-    def __init__(self, name: str, symbol: str):
+    def __init__(self, symbol: str):
         """
         A TicTacToe player
 
-        :param name: name of player
         :param symbol: 'x' or 'o'
         """
-        self.name = name
         self.symbol = symbol
 
     @abstractmethod
@@ -26,8 +24,8 @@ class Player(ABC):
 
 
 class Computer(Player):
-    def __init__(self, name: str, symbol: str, exp_rate=0.3):
-        super().__init__(name, symbol)
+    def __init__(self, symbol: str, exp_rate=0.3):
+        super().__init__(symbol)
         self.agent = QLearningAgent(policy=self._load_policy(), exp_rate=exp_rate)
 
     def _copy_board_and_get_new_hash(self, action, board: Board):
@@ -62,18 +60,19 @@ class Human(Player):
     def choose_action(self, board: Board):
         while True:
             print(board.pretty())
-            row = int(input('Row: ')) - 1
-            col = int(input('Col: ')) - 1
+            row = input('Row: ')
+            col = input('Col: ')
             try:
-                board.put(self.symbol, (row, col))
+                board.put(self.symbol, (int(row) - 1, int(col) - 1))
                 break
             except ValueError:
+                print(f'Bad action: {row, col}. Try again.')
                 pass
 
     def end_round(self, reward: float):
         if reward == 1:
-            print(f'Congratulations {self.name}! You won!')
+            print('Congratulations! You won!')
         elif reward == 0:
-            print(f'Too bad {self.name}, you lost.')
+            print('Too bad, you lost.')
         else:
-            print(f'Not bad, not good. You drew the game {self.name}.')
+            print('Not bad, not good. You drew the game.')

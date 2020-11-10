@@ -5,11 +5,11 @@ import numpy as np
 
 class QLearningAgent:
     def __init__(self, policy=None, exp_rate=0.3, learning_rate=0.2, decay_gamma=0.9):
-        self.exp_rate = exp_rate
-        self.decay_gamma = decay_gamma
-        self.lr = learning_rate
+        self._exp_rate = exp_rate
+        self._decay_gamma = decay_gamma
+        self._learning_rate = learning_rate
+        self._states_history = []
         self.states = collections.defaultdict(float, policy or {})
-        self.states_history = []
 
     def choose_action(self, actions: list, state_hash_function):
         """
@@ -19,9 +19,9 @@ class QLearningAgent:
         :return: the agents action
         """
         action = self._get_random_action(actions) \
-            if np.random.uniform(0, 1) < self.exp_rate \
+            if np.random.uniform(0, 1) < self._exp_rate \
             else self._find_best_action(actions, state_hash_function)
-        self.states_history.append(state_hash_function(action))
+        self._states_history.append(state_hash_function(action))
         return action
 
     def end_iteration(self, reward: float):
@@ -30,19 +30,18 @@ class QLearningAgent:
             Q(state, action) ← (1−α) Q(state, action) + α(reward + γmax Q(next state, all actions))
         :param reward: the reward for this iteration
         """
-        for state in reversed(self.states_history):
-            self.states[state] += self.lr * (self.decay_gamma * reward - self.states[state])
+        for state in reversed(self._states_history):
+            self.states[state] += self._learning_rate * (self._decay_gamma * reward - self.states[state])
             reward = self.states[state]
-        self.states_history.clear()
+        self._states_history.clear()
 
     def _find_best_action(self, actions, state_hash_function):
         value_max = float('-inf')
         action = None
         for a in actions:
-            # If we don't know that state, we rate it low
-            v = self.states.get(state_hash_function(a), 0)
-            if v > value_max:
-                value_max = v
+            h = state_hash_function(a)
+            if h in self.states and self.states[h] > value_max:
+                value_max = self.states[h]
                 action = a
         return action or self._get_random_action(actions)
 
